@@ -1,0 +1,45 @@
+import csv
+
+# --- USER PARAMETERS: CHANGE THESE ---
+INPUT_FILE = 'march_2025_data.csv'
+OUTPUT_FILE = 'twelve_months_data_2025.csv'
+
+NEW_YEAR = 2025
+NEW_DOMAIN = 'updated-domain.com'
+NEW_RESOURCE_ID = 'https://new-resource-id.com/auth'
+NEW_APP_NAME = 'New Application Name'
+
+def update_csv():
+    try:
+        with open(INPUT_FILE, mode='r', encoding='utf-8') as infile:
+            reader = csv.DictReader(infile)
+            fieldnames = reader.fieldnames
+            
+            with open(OUTPUT_FILE, mode='w', encoding='utf-8', newline='') as outfile:
+                writer = csv.DictWriter(outfile, fieldnames=fieldnames)
+                writer.writeheader()
+
+                count = 0
+                for row in reader:
+                    # 1. Update Year
+                    row['year'] = NEW_YEAR
+                    
+                    # 2. Update Domain(only if it matches elsevier.com)
+                    row['domain'] = NEW_DOMAIN
+                    
+                    # 3. Update Resource ID and App Name
+                    row['resourceid'] = NEW_RESOURCE_ID
+                    row['resourceappname'] = NEW_APP_NAME
+                    
+                    writer.writerow(row)
+                    count += 1
+        
+        print(f"Success! {count} rows updated and saved to {OUTPUT_FILE}.")
+
+    except FileNotFoundError:
+        print(f"Error: The file '{INPUT_FILE}' was not found.")
+    except KeyError as e:
+        print(f"Error: Could not find column {e}. Check your CSV headers.")
+
+if __name__ == "__main__":
+    update_csv()
